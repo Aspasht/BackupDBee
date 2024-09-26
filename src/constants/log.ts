@@ -1,6 +1,6 @@
 import { Logger } from "./logger";
 
-class Log {
+export class Log {
   static error(message: string) {
     Logger.error(message);
   }
@@ -19,4 +19,3 @@ class Log {
   }
 }
 
-export default Log;
