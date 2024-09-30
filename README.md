@@ -1,5 +1,5 @@
 # BackupDBee 🐝
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="https://github.com/Aspasht/BackupDBee/blob/main/backupdbee_logo.svg">
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="https://github.com/Aspasht/BackupDBee/blob/main/backupdbee_logo.svg" width=400&height400>
 
 Effortlessly manage your database backups at one go. This easy-to-use tool supports MySQL & PostgreSQL allowing you to back up multiple databases at once.
 
