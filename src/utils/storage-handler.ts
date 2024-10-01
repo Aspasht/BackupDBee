@@ -1,56 +1,33 @@
-// import { type DumpInfo,Sender,type Storage } from "@/types";
-// import { Log } from "../constants";
-// import { EmailSender,S3Sender,LocalSender } from "@/storage"
-// import * as fs from "fs";
+import { DumpInformation } from "@/types";
+import { Log } from "../constants";
+import { S3Sender } from "../storage"
+import * as fs from "fs";
 
 
-// export const sendToDestinations = async (dumpInfo: DumpInfo,destinations: Storage[]) => {
-//   const sentToDestinations = Object.keys(destinations)
-//     .filter((key) => destinations[key as keyof Destinations].enabled)
-//     .map((key) => key as keyof Destinations);
 
-//   const senders: Sender[] = [];
+export const storageHandler = async (dumpInfo: DumpInformation,destinations: string[]) => {
 
-//   for (const sendToDestination of sentToDestinations) {
-//     switch (sendToDestination.trim().toUpperCase()) {
-//       case DESTINATION.EMAIL:
-//         Log.info("Sending to email");
-//         senders.push(
-//           new EmailSender(
-//             destinations.email.from,
-//             destinations.email.to,
-//             dumpInfo.compressedFilePath
-//           )
-//         );
+  for (const store of destinations) {
+    switch (store) {
+      case 's3': {
+        const s3 = new S3Sender({
+            fileName:dumpInfo.compressedFilePath.split("/").pop()||"",
+            fileContent: fs.readFileSync(dumpInfo.compressedFilePath)
+          });
+          s3.send();
+        break;
+        }
+      case 'local':
+        console.log("Saved to local machine.")
+        break;
 
-//         break;
-//       case DESTINATION.S3_BUCKET:
-//         Log.info("Sending to S3");
-//         senders.push(
-//           new S3Sender({
-//             fileName: `${dumpInfo.dumpFilePath.split("/").pop()}.zip`,
-//             fileContent: fs.readFileSync(dumpInfo.compressedFilePath),
-//           })
-//         );
-//         break;
-
-//       case DESTINATION.LOCAL:
-//         Log.info("Sending to local");
-//         senders.push(
-//           new LocalSender(
-//             destinations.local.path,
-//             dumpInfo.compressedFilePath
-//           )
-//         )
-//         break;
-
-//       default:
-//         console.error(
-//           `[-] Unsupported notification medium: ${sendToDestination}`
-//         );
-//         Log.error(`Unsupported notification medium: ${sendToDestination}`);
-//     }
-//   }
-// };
+      default:
+        console.error(
+          `[-] Unsupported storage service.`
+        );
+        Log.error(`Unsupported storage service`);
+    }
+  }
+};
 
 

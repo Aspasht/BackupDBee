@@ -60,12 +60,15 @@ const handleDumpProcess = (
 
 
 
+
 // Factory function to create the appropriate dump handler based on database type
+const MYSQL = 'mysql'
+const POSTGRES = 'postgres'
 const createDumpHandler = (databaseType: string) => {
   switch (databaseType) {
-    case "mysql":
+    case MYSQL:
       return handleMysqlDump;
-    case "postgres":
+    case POSTGRES:
       return handlePostgresDump;
     default:
       throw new Error(`[-] Unsupported database type: ${databaseType}`);
@@ -91,7 +94,7 @@ export const backupHandler = async (database: Database): Promise<DumpInformation
       // Log the error and continue to the next database
       Log.error(`[!] Backup failed for ${database.name}: ${(error as Error).message}`);
       return {
-        compressedFilePath:null,
+        compressedFilePath:'',
         databaseName:database.name
       }
     }

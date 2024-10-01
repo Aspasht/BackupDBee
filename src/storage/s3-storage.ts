@@ -2,22 +2,25 @@ import {Sender, type SenderOption } from "@/types";
 import {
   S3Client,
   PutObjectCommand,
+  ListObjectsV2Command,
+  ListObjectsV2CommandInput,
   PutObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { storage } from "../utils";
+import chalk from "chalk";
 
-
+const endpoint= storage.s3.endpoint
 const bucket = storage.s3.bucket_name
 const region = storage.s3.region
 const accessKey = storage.s3.access_key
 const secretAccessKey = storage.s3.secret_key
-
 
 export class S3Sender implements Sender {
   private static s3ClientInstance: S3Client | null = null;
   private static getS3ClientInstance(): S3Client {
     if (!S3Sender.s3ClientInstance) {
       S3Sender.s3ClientInstance = new S3Client({
+        endpoint: endpoint || 'https://s3.amazonaws.com',
         region: region,
         credentials: {
           accessKeyId: accessKey,
@@ -29,8 +32,8 @@ export class S3Sender implements Sender {
   }
 
   private options: SenderOption;
-  constructor(options: SenderOption) {
-    this.options = options;
+  constructor(options?: SenderOption) {
+    this.options = options || { fileName: '', fileContent: undefined };
   }
 
   // Method to validate file information
@@ -56,7 +59,7 @@ export class S3Sender implements Sender {
       const s3Client = S3Sender.getS3ClientInstance();
 
       const response = await s3Client.send(command);
-      console.log("[+] File uploaded successfully:", response);
+      console.log(chalk.green(`[+] File uploaded successfully to aws s3 "${bucket}" bucket:`, response.$metadata.httpStatusCode, 'OK'));
     } catch (err) {
       console.error("[-] Error uploading file:", err);
     }
@@ -78,6 +81,31 @@ export class S3Sender implements Sender {
       } else {
         console.error(`[-] Unknown error occurred.`);
       }
+    }
+  }
+
+
+  // list all backups available
+  async listObjects(): Promise<void> {
+    try {
+      const listParams: ListObjectsV2CommandInput = {
+        Bucket: bucket,
+      };
+
+      const command = new ListObjectsV2Command(listParams);
+      const s3Client = S3Sender.getS3ClientInstance(); 
+
+      const response = await s3Client.send(command);
+      if (response.Contents) {
+        console.log("[+] Objects in S3 bucket:");
+        response.Contents.forEach((object) => {
+          console.log(`- ${object.Key} (Last Modified: ${object.LastModified})`);
+        });
+      } else {
+        console.log("[-] No objects found in the bucket.");
+      }
+    } catch (err) {
+      console.error("[-] Error listing objects in S3:", err);
     }
   }
 }

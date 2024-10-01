@@ -41,6 +41,7 @@ export interface Local {
 }
 
 export interface S3 {
+  endpoint?:string,
   bucket_name:string;
   region: string;
   access_key: string
@@ -67,7 +68,7 @@ export type NotificationPlatforms = {
 }
 
 export type DumpInformation= {
-  compressedFilePath:string|null,
+  compressedFilePath:string,
   databaseName:string
 }
 
