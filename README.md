@@ -30,29 +30,77 @@ Make sure to install nodejs and zip in the linux server.
 node index.mjs install #this creates .env file
 ```
 
-### Configurations ⚒️
-
-For GMAIL, you need to enable less secure apps in your gmail account. [Click here to enable less secure apps](https://myaccount.google.com/lesssecureapps)
+### 📦 Basic Command
 
 ```bash
-crontab -e
-
-#at the crontab file, add the following script.
-#minute hour dayOfMonth month dayOfWeek commandToRun
-* * * * * commandToRun {_ can be any value}~~
+backupdbee [options]
 ```
 
-_OR, you can use process managers as_
+---
 
+### 🛠️ Available Options
+
+| Flag | Alias | Description |
+|------|-------|-------------|
+| `--database [names]` | `-d` | Backup one or more databases (comma-separated). Omit value to backup all. |
+| `--notify [platforms]` | `-n` | Notify via Slack, Discord, Telegram, or a custom webhook (comma-separated). Omit value to notify through all. |
+| `--storage [services]` | `-s` | Store backup on cloud storage (e.g., `s3`). Omit value to use all configured storages. |
+| `--list` | `-l` | List available databases, notification platforms, or storage options. Must be used with another flag like `--database`, `--notify`, or `--storage`. |
+| `--list-backups` | `-b` | List all stored backups (currently supports S3). |
+| `--help` | `-h` | Show help information. |
+| `--version` | `-v` | Show CLI version. |
+
+---
+
+### 💡 Examples
+
+#### ✅ Backup all configured databases
+```bash
+backupdbee --database
 ```
-pm2 start src/index.mjs --name dbbackup --cron "* * * * *"
+
+#### 🎯 Backup specific databases
+```bash
+backupdbee --database=postgres,mysql
 ```
 
-## Feel Free To Contribute 👌
+#### ☁️ Upload backup to cloud (e.g., AWS S3)
+```bash
+backupdbee --database=postgres --storage=s3
+```
 
-Customize it further based on your tool’s specific features and benefits! PR are welcome.
+#### 🔔 Notify via Slack and Discord
+```bash
+backupdbee --database=postgres --notify=slack,discord
+```
 
-Current work updates can be found at:
+#### 📜 List all available databases
+```bash
+backupdbee --database --list
+```
+
+#### 📜 List all available notification services
+```bash
+backupdbee --notify --list
+```
+
+#### 📜 List available storage services
+```bash
+backupdbee --storage --list
+```
+
+#### 📦 List existing remote backups
+```bash
+backupdbee --list-backups
+```
+
+---
+
+### 🧠 Tips
+
+- You can combine flags to perform complex operations in one step.
+- If no flags are provided, the tool will prompt or exit silently.
+- You can define all database, notification, and storage configs in a [`backupdbee.yml`](#️-configuration-with-backupdbeeyml) file.Current work updates can be found at:
 [https://github.com/orgs/28softwares/projects/1](https://github.com/orgs/28softwares/projects/1)
 
 ## Contributors 🤝
